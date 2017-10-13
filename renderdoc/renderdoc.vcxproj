@@ -1,0 +1,415 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Development|Win32">
+      <Configuration>Development</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Development|x64">
+      <Configuration>Development</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{E2B46D67-90E2-40B6-9597-72930E7845E5}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>renderdoc</RootNamespace>
+    <ProjectName>renderdoc</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+  	<LinkIncremental>false</LinkIncremental>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(SolutionDir)\breakpad;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IntDir>$(SolutionDir)$(Platform)\$(Configuration)\obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Platform)'=='x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(SolutionDir)renderdoc\;$(SolutionDir)renderdoc\3rdparty\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>RDOC_DLL_FILE=$(ProjectName);RENDERDOC_EXPORTS;RENDERDOC_PLATFORM_WIN32;WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>precompiled.h</ForcedIncludeFiles>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>ws2_32.lib;kernel32.lib;user32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>$(ProjectDir)os\win32\comexport.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Development'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(SolutionDir)$(Platform)\$(Configuration)\breakpad_common.lib;$(SolutionDir)$(Platform)\$(Configuration)\crash_generation_client.lib;$(SolutionDir)$(Platform)\$(Configuration)\exception_handler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="3rdparty\jpeg-compressor\jpgd.h" />
+    <ClInclude Include="3rdparty\jpeg-compressor\jpge.h" />
+    <ClInclude Include="3rdparty\lz4\lz4.h" />
+    <ClInclude Include="3rdparty\plthook\plthook.h" />
+    <ClInclude Include="3rdparty\stb\stb_image.h" />
+    <ClInclude Include="3rdparty\stb\stb_image_resize.h" />
+    <ClInclude Include="3rdparty\stb\stb_image_write.h" />
+    <ClInclude Include="3rdparty\stb\stb_truetype.h" />
+    <ClInclude Include="3rdparty\tinyexr\tinyexr.h" />
+    <ClInclude Include="3rdparty\tinyfiledialogs\tinyfiledialogs.h" />
+    <ClInclude Include="api\app\renderdoc_app.h" />
+    <ClInclude Include="api\replay\basic_types.h" />
+    <ClInclude Include="api\replay\capture_options.h" />
+    <ClInclude Include="api\replay\control_types.h" />
+    <ClInclude Include="api\replay\d3d11_pipestate.h" />
+    <ClInclude Include="api\replay\d3d12_pipestate.h" />
+    <ClInclude Include="api\replay\data_types.h" />
+    <ClInclude Include="api\replay\gl_pipestate.h" />
+    <ClInclude Include="api\replay\renderdoc_replay.h" />
+    <ClInclude Include="api\replay\replay_enums.h" />
+    <ClInclude Include="api\replay\shader_types.h" />
+    <ClInclude Include="api\replay\version.h" />
+    <ClInclude Include="api\replay\vk_pipestate.h" />
+    <ClInclude Include="common\common.h" />
+    <ClInclude Include="common\custom_assert.h" />
+    <ClInclude Include="common\dds_readwrite.h" />
+    <ClInclude Include="common\globalconfig.h" />
+    <ClInclude Include="common\shader_cache.h" />
+    <ClInclude Include="common\threading.h" />
+    <ClInclude Include="common\timing.h" />
+    <ClInclude Include="common\wrapped_pool.h" />
+    <ClInclude Include="core\core.h" />
+    <ClInclude Include="core\crash_handler.h" />
+    <ClInclude Include="core\precompiled.h" />
+    <ClInclude Include="core\replay_proxy.h" />
+    <ClInclude Include="core\resource_manager.h" />
+    <ClInclude Include="core\socket_helpers.h" />
+    <ClInclude Include="data\embedded_files.h" />
+    <ClInclude Include="data\glsl\debuguniforms.h" />
+    <ClInclude Include="data\glsl\gl_texsample.h" />
+    <ClInclude Include="data\glsl\gles_texsample.h" />
+    <ClInclude Include="data\glsl\vk_texsample.h" />
+    <ClInclude Include="data\glsl_shaders.h" />
+    <ClInclude Include="data\hlsl\debugcbuffers.h" />
+    <ClInclude Include="data\resource.h" />
+    <ClInclude Include="hooks\hooks.h" />
+    <ClInclude Include="maths\camera.h" />
+    <ClInclude Include="maths\formatpacking.h" />
+    <ClInclude Include="maths\half_convert.h" />
+    <ClInclude Include="maths\matrix.h" />
+    <ClInclude Include="maths\quat.h" />
+    <ClInclude Include="maths\vec.h" />
+    <ClInclude Include="os\os_specific.h" />
+    <ClInclude Include="os\posix\posix_hook.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="os\posix\posix_specific.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="os\win32\dia2_stubs.h" />
+    <ClInclude Include="os\win32\win32_hook.h" />
+    <ClInclude Include="os\win32\win32_specific.h" />
+    <ClInclude Include="replay\replay_driver.h" />
+    <ClInclude Include="replay\replay_controller.h" />
+    <ClInclude Include="replay\type_helpers.h" />
+    <ClInclude Include="serialise\serialiser.h" />
+    <ClInclude Include="serialise\string_utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="3rdparty\jpeg-compressor\jpgd.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="3rdparty\jpeg-compressor\jpge.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="3rdparty\lz4\lz4.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="3rdparty\plthook\plthook_elf.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="3rdparty\stb\stb_impl.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="3rdparty\tinyexr\tinyexr.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="3rdparty\tinyfiledialogs\tinyfiledialogs.c">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="common\common.cpp" />
+    <ClCompile Include="common\dds_readwrite.cpp" />
+    <ClCompile Include="core\core.cpp" />
+    <ClCompile Include="core\image_viewer.cpp" />
+    <ClCompile Include="core\precompiled.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="core\target_control.cpp" />
+    <ClCompile Include="core\remote_server.cpp" />
+    <ClCompile Include="core\replay_proxy.cpp" />
+    <ClCompile Include="core\resource_manager.cpp" />
+    <ClCompile Include="data\glsl_shaders.cpp" />
+    <ClCompile Include="hooks\hooks.cpp" />
+    <ClCompile Include="maths\camera.cpp" />
+    <ClCompile Include="maths\matrix.cpp" />
+    <ClCompile Include="os\os_specific.cpp" />
+    <ClCompile Include="os\posix\android\android_callstack.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\android\android_hook.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\android\android_process.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\android\android_stringio.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\android\android_threading.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\apple\apple_callstack.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\apple\apple_hook.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\apple\apple_process.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\apple\apple_stringio.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\apple\apple_threading.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\linux\linux_callstack.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\linux\linux_hook.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\linux\linux_process.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\linux\linux_stringio.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\linux\linux_threading.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\posix_libentry.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\posix_network.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\posix_process.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\posix_stringio.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\posix\posix_threading.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="os\win32\sys_win32_hooks.cpp" />
+    <ClCompile Include="os\win32\win32_callstack.cpp" />
+    <ClCompile Include="os\win32\win32_hook.cpp" />
+    <ClCompile Include="os\win32\win32_libentry.cpp" />
+    <ClCompile Include="os\win32\win32_network.cpp" />
+    <ClCompile Include="os\win32\win32_process.cpp" />
+    <ClCompile Include="os\win32\win32_shellext.cpp" />
+    <ClCompile Include="os\win32\win32_stringio.cpp" />
+    <ClCompile Include="os\win32\win32_threading.cpp" />
+    <ClCompile Include="replay\app_api.cpp" />
+    <ClCompile Include="replay\capture_file.cpp" />
+    <ClCompile Include="replay\capture_options.cpp" />
+    <ClCompile Include="replay\entry_points.cpp" />
+    <ClCompile Include="replay\replay_driver.cpp" />
+    <ClCompile Include="replay\replay_output.cpp" />
+    <ClCompile Include="replay\replay_controller.cpp" />
+    <ClCompile Include="replay\type_helpers.cpp" />
+    <ClCompile Include="serialise\grisu2.cpp" />
+    <ClCompile Include="serialise\serialiser.cpp" />
+    <ClCompile Include="serialise\string_utils.cpp" />
+    <ClCompile Include="serialise\utf8printf.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="data\renderdoc.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\glsl\array2ms.comp" />
+    <None Include="data\glsl\blit.vert" />
+    <None Include="data\glsl\checkerboard.frag" />
+    <None Include="data\glsl\deptharr2ms.frag" />
+    <None Include="data\glsl\depthms2arr.frag" />
+    <None Include="data\glsl\fixedcol.frag" />
+    <None Include="data\glsl\histogram.comp" />
+    <None Include="data\glsl\mesh.comp" />
+    <None Include="data\glsl\mesh.frag" />
+    <None Include="data\glsl\mesh.geom" />
+    <None Include="data\glsl\mesh.vert" />
+    <None Include="data\glsl\minmaxresult.comp" />
+    <None Include="data\glsl\minmaxtile.comp" />
+    <None Include="data\glsl\ms2array.comp" />
+    <None Include="data\glsl\outline.frag" />
+    <None Include="data\glsl\quadresolve.frag" />
+    <None Include="data\glsl\quadwrite.frag" />
+    <None Include="data\glsl\texdisplay.frag" />
+    <None Include="data\glsl\text.frag" />
+    <None Include="data\glsl\text.vert" />
+    <None Include="data\glsl\trisize.frag" />
+    <None Include="data\glsl\trisize.geom" />
+    <None Include="data\hlsl\debugcommon.hlsl" />
+    <None Include="data\hlsl\debugdisplay.hlsl" />
+    <None Include="data\hlsl\debugtext.hlsl" />
+    <None Include="data\hlsl\histogram.hlsl" />
+    <None Include="data\hlsl\mesh.hlsl" />
+    <None Include="data\hlsl\multisample.hlsl" />
+    <None Include="os\win32\comexport.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="driver\d3d11\renderdoc_d3d11.vcxproj">
+      <Project>{f1e59a05-60d4-4927-9e57-dd191eae90ef}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="driver\d3d12\renderdoc_d3d12.vcxproj">
+      <Project>{9e6b10a2-84b4-434d-abdb-43be4ea650f4}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="driver\d3d8\renderdoc_d3d8.vcxproj">
+      <Project>{9c4487e8-eeb0-4a7f-bd81-23f81cd24e22}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="driver\d3d9\renderdoc_d3d9.vcxproj">
+      <Project>{44044776-9469-4079-b587-abfff6574aa4}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="driver\dxgi\renderdoc_dxgi.vcxproj">
+      <Project>{2a793574-bd3c-46d4-9788-c339d9550ce1}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="driver\gl\renderdoc_gl.vcxproj">
+      <Project>{f92fcda6-a261-4eec-9cd0-73a11fbcc459}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="driver\vulkan\renderdoc_vulkan.vcxproj">
+      <Project>{88c5dac6-30a0-4cfd-af51-540a977d1f3f}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="renderdoc.natvis" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <Target Name="AfterBuild" AfterTargets="Build">
+    <Copy SourceFiles="$(ProjectDir)api\app\renderdoc_app.h" DestinationFolder="$(OutDir)">
+    </Copy>
+    <Copy SourceFiles="$(ProjectDir)3rdparty\dbghelp\$(Platform)\symsrv.dll" DestinationFolder="$(OutDir)">
+    </Copy>
+    <Copy SourceFiles="$(ProjectDir)3rdparty\dbghelp\$(Platform)\symsrv.yes" DestinationFolder="$(OutDir)">
+    </Copy>
+    <Copy SourceFiles="$(ProjectDir)3rdparty\dbghelp\$(Platform)\dbghelp.dll" DestinationFolder="$(OutDir)">
+    </Copy>
+  </Target>
+</Project>

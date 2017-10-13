@@ -1,0 +1,56 @@
+language: cpp
+sudo: required
+dist: trusty
+
+branches:
+  only:
+    - v0.x
+    - v1.x
+    # having another branch lets us force-push tests here without spamming master
+    - travis-test
+
+env:
+  global:
+    - RENDERDOC_TRAVIS_BUILD=1 RENDERDOC_CI_BUILD=1
+
+# variables for the matrix, which are implicitly unset if omitted
+#
+# DOCS_BUILD - set for docs builds, unset for code builds
+#
+# At least one of these should be set:
+#
+# LINUX_BUILD - set for linux builds
+# APPLE_BUILD - set for OSX builds
+# ANDROID_BUILD - set for android builds
+#
+# RELEASE_BUILD - set if a cmake should be set to a release build
+
+matrix:
+  fast_finish: true
+  include:
+# only build docs on linux
+    - os: linux
+      env: DOCS_BUILD=1
+    - os: linux
+      env: LINUX_BUILD=1
+      compiler: gcc
+    - os: linux
+      env: LINUX_BUILD=1
+      compiler: clang
+    - os: linux
+      env: LINUX_BUILD=1 RELEASE_BUILD=1
+      compiler: clang
+    - os: linux
+      env: ANDROID_BUILD=1
+      compiler: clang
+    - os: osx
+      osx_image: xcode8.2
+      env: APPLE_BUILD=1
+      compiler: clang
+
+# install dependencies
+install:
+  - . ./scripts/travis/setup.sh
+
+script:
+  - . ./scripts/travis/compile.sh
