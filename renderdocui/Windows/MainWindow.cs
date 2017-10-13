@@ -2146,12 +2146,13 @@ namespace renderdocui.Windows
                         var lastThumb = thumbnails[thumbnails.Length - 1];
                         //Click the last one
                         textViewer.mockThumbsClick(lastThumb);
+                        Thread.Sleep(1000);
                         //AutoFit
                         textViewer.autoFit_Click(textViewer, null);
                         //Click again to recover the thumbnails
                         textViewer.mockThumbsClick(lastThumb);
                         //Thread Sleep 1s to load thumbs
-                        Thread.Sleep(5000);
+                        Thread.Sleep(1000);
                         textViewer.save_texture_specific_file(Path.Combine(directoryName, drawIndex + ".exr"), FileType.EXR);
                     }
                     if (nextNode == null)
