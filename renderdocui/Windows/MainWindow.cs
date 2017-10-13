@@ -2107,53 +2107,63 @@ namespace renderdocui.Windows
 
 
         private void saveAllToolItem_Click(object sender, EventArgs e)
-        {   
-            string directoryName = m_Core.LogFileName + "_output_images";
-            //建立以LogFileName为名的文件夹
-            var textViewer = m_Core.GetTextureViewer();
-            Directory.CreateDirectory(directoryName);
-            //遍历ID
-            var eventView = m_Core.GetEventBrowser().eventView;
-            var curNode = eventView.Nodes[0];
-            var beginEndTup = getBeginEnd();
-            while(true)
+        {
+            Task.Factory.StartNew(() =>
             {
-                var drawIndex = (uint)curNode.Id;
-                var nextNode = NodeCollection.GetNextNode(curNode, 1);
-                if (drawIndex < beginEndTup.Item2)
+                string directoryName = m_Core.LogFileName + "_output_images";
+                //建立以LogFileName为名的文件夹
+                var eventBrowser = m_Core.GetEventBrowser();
+                var textViewer = m_Core.GetTextureViewer();
+                Directory.CreateDirectory(directoryName);
+                //遍历ID
+                var eventView = m_Core.GetEventBrowser().eventView;
+                var curNode = eventView.Nodes[0];
+                var beginEndTup = getBeginEnd();
+                while (true)
                 {
-                    curNode = nextNode;
-                    continue;
+                    var drawIndex = (uint)curNode.Id;
+                    var nextNode = NodeCollection.GetNextNode(curNode, 1);
+                    if (drawIndex < beginEndTup.Item2)
+                    {
+                        curNode = nextNode;
+                        continue;
+                    }
+                    else if (drawIndex > beginEndTup.Item2)
+                    {
+                        break;
+                    }
+                    //设置焦点
+                    //eventView.NodesSelection.Clear();
+                    //eventView.NodesSelection.Add(eventView.Nodes[0]);
+                    //eventView.FocusedNode = curNode;
+                    eventBrowser.SetFocusedNode(curNode);
+                    //使用Task调用save
+                    textViewer.save_texture_specific_file(Path.Combine(directoryName, drawIndex + ".png"), FileType.PNG);
+                    //If the end, save depth buffer
+                    if (drawIndex == beginEndTup.Item2)
+                    {
+                        var thumbnails = textViewer.rwPanel.Thumbnails;
+                        var lastThumb = thumbnails[thumbnails.Length - 1];
+                        //Click the last one
+                        textViewer.mockThumbsClick(lastThumb);
+                        //AutoFit
+                        textViewer.autoFit_Click(textViewer, null);
+                        //Click again to recover the thumbnails
+                        textViewer.mockThumbsClick(lastThumb);
+                        //Thread Sleep 1s to load thumbs
+                        Thread.Sleep(5000);
+                        textViewer.save_texture_specific_file(Path.Combine(directoryName, drawIndex + ".exr"), FileType.EXR);
+                    }
+                    if (nextNode == null)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        curNode = nextNode;
+                    }
                 }
-                else if(drawIndex > beginEndTup.Item2)
-                {
-                    break;
-                }
-                //设置焦点
-                eventView.NodesSelection.Clear();
-                eventView.NodesSelection.Add(eventView.Nodes[0]);
-                eventView.FocusedNode = curNode;
-                //使用Task调用save
-                textViewer.save_texture_specific_file(Path.Combine(directoryName, drawIndex+".png"), FileType.PNG);
-                //If the end, save depth buffer
-                if(drawIndex == beginEndTup.Item2)
-                {
-                    var thumbnails = textViewer.rwPanel.Thumbnails;
-                    var lastThumb = thumbnails[thumbnails.Length - 1];
-                    textViewer.thumbsLayout_MouseClick(lastThumb, new MouseEventArgs(MouseButtons.Left, 1, 1, 1, 1));
-                    //Click to switch to depth image
-                    var depthTarget = TextureViewer.Following.GetDepthTarget(m_Core);
-                    textViewer.save_texture_specific_file(Path.Combine(directoryName, drawIndex + ".exr"), FileType.EXR);
-                }
-                if (nextNode == null)
-                {
-                    break;
-                }
-                else
-                {
-                    curNode = nextNode;
-                }
-            }
+            });
         }
 
         private Tuple<uint,uint> getBeginEnd()

@@ -192,6 +192,17 @@ namespace renderdocui.Windows
             return writer.ToString();
         }
 
+        public void SetFocusedNode(TreelistView.Node node)
+        {
+            if (InvokeRequired) {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    eventView.NodesSelection.Clear();
+                    eventView.NodesSelection.Add(eventView.Nodes[0]);
+                    eventView.FocusedNode = node;
+                }));
+            }
+        }
 
         private PersistantConfig.TimeUnit m_TimeUnit = PersistantConfig.TimeUnit.Microseconds;
 

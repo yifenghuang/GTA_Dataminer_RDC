@@ -1412,7 +1412,7 @@
         private Controls.NoScrollPanel render;
         private Controls.TextureListBox textureList;
         public Controls.ThumbnailStrip rwPanel;
-        private Controls.ThumbnailStrip roPanel;
+        public Controls.ThumbnailStrip roPanel;
         private System.Windows.Forms.ToolStrip zoomStrip;
         private System.Windows.Forms.ToolStripLabel toolStripLabel4;
         private System.Windows.Forms.ToolStripButton fitToWindow;

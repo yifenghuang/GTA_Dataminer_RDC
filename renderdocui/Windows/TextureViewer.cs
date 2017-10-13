@@ -3327,7 +3327,7 @@ namespace renderdocui.Windows
             }
         }
 
-        private void autoFit_Click(object sender, EventArgs e)
+        public void autoFit_Click(object sender, EventArgs e)
         {
             AutoFitRange();
         }
@@ -3677,17 +3677,16 @@ namespace renderdocui.Windows
             if (type == FileType.PNG)
             {
                 saveTexture.slice.cubeCruciform = saveTexture.slice.slicesAsGrid = false;
-                saveTexture.slice.sliceIndex = (int)0;
+                saveTexture.sample.sampleIndex = ~0U;
             }
             else
             {
                 saveTexture.slice.cubeCruciform = false;
                 saveTexture.slice.slicesAsGrid = true;
-                saveTexture.slice.sliceIndex = (int)0;
+                saveTexture.slice.sliceIndex = -1;
                 saveTexture.typeHint = FormatComponentType.Depth;
             }
 
-            saveTexture.sample.sampleIndex = ~0U;
             saveTexture.sample.mapToArray = false;
 
             if (m_TexDisplay.CustomShader != ResourceId.Null)
@@ -3700,11 +3699,9 @@ namespace renderdocui.Windows
                 });
             }
 
-            bool ret = false;
-
             m_Core.Renderer.Invoke((ReplayRenderer r) =>
             {
-                ret = r.SaveTexture(saveTexture, filePath);
+                r.SaveTexture(saveTexture, filePath);
             });
         }
 
@@ -3975,7 +3972,18 @@ namespace renderdocui.Windows
             }
         }
 
-        public void thumbsLayout_MouseClick(object sender, MouseEventArgs e)
+        public void mockThumbsClick(object sender)
+        {
+            if (InvokeRequired)
+            {
+                this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    thumbsLayout_MouseClick(sender, new MouseEventArgs(MouseButtons.Left, 1, 1, 1, 1));
+                }));
+            }
+        }
+
+        private void thumbsLayout_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left && sender is ResourcePreview)
             {
