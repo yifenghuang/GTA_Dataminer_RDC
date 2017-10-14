@@ -704,6 +704,22 @@ namespace renderdocui.Windows
 
         #region Capture & Log Loading
 
+        public void mockLoad(string filename, bool temporary, bool local)
+        {
+            if (InvokeRequired)
+            {
+                var ret = this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    m_Core.LoadLogfile(filename, filename, false, true);
+                }));
+                this.EndInvoke(ret);
+            }
+            else
+            {
+                m_Core.LoadLogfile(filename, filename, false, true);
+            }
+        }
+
         public void LoadLogfile(string filename, bool temporary, bool local)
         {
             if (PromptCloseLog())
@@ -2105,64 +2121,64 @@ namespace renderdocui.Windows
             m_Core.Renderer.CancelReplayLoop();
         }
 
-
-        private void saveAllToolItem_Click(object sender, EventArgs e)
+        private void saveFrames()
         {
-            string directoryName = m_Core.LogFileName + "_output_images";
+            string directoryName = m_Core.LogFileName + "_output";
+            string imageDirName = Path.Combine(directoryName, "images");
             //建立以LogFileName为名的文件夹
             var eventBrowser = m_Core.GetEventBrowser();
             var textViewer = m_Core.GetTextureViewer();
             Directory.CreateDirectory(directoryName);
+            Directory.CreateDirectory(imageDirName);
             //遍历ID
             var eventView = m_Core.GetEventBrowser().eventView;
             var curNode = eventView.Nodes[0];
             var beginEndTup = getBeginEnd();
-            Task.Factory.StartNew(() =>
+            //store thumbnail
+            var thumbBytes = StaticExports.GetThumbnail(m_Core.LogFileName, FileType.JPG, 2000);
+            MemoryStream ms = new MemoryStream(thumbBytes); //建立内存的流
+            Image img = Image.FromStream((Stream)ms); //把内存的流转换成图片格式
+            img.Save(Path.Combine(directoryName, "thumbnail.jpg"), System.Drawing.Imaging.ImageFormat.Jpeg);// 保存图片
+
+            while (true)
             {
-                while (true)
+                var drawIndex = (uint)curNode.Id;
+                var nextNode = NodeCollection.GetNextNode(curNode, 1);
+                if (drawIndex < beginEndTup.Item1)
                 {
-                    var drawIndex = (uint)curNode.Id;
-                    var nextNode = NodeCollection.GetNextNode(curNode, 1);
-                    if (drawIndex < beginEndTup.Item2-1)
-                    {
-                        curNode = nextNode;
-                        continue;
-                    }
-                    else if (drawIndex > beginEndTup.Item2)
-                    {
-                        break;
-                    }
-                    //设置焦点
-                    //eventView.NodesSelection.Clear();
-                    //eventView.NodesSelection.Add(eventView.Nodes[0]);
-                    //eventView.FocusedNode = curNode;
-                    eventBrowser.mockSetFocusedNode(curNode);
-                    //使用Task调用save
-                    textViewer.mockTextureSave(Path.Combine(directoryName, drawIndex + ".png"), FileType.PNG);
-                    //If the end, save depth buffer
-                    if (drawIndex == beginEndTup.Item2)
-                    {
-                        var thumbnails = textViewer.rwPanel.Thumbnails;
-                        var lastThumb = thumbnails[thumbnails.Length - 1];
-                        //Click the last one
-                        textViewer.mockThumbsClick(lastThumb);
-                        //AutoFit
-                        textViewer.mockFitClick();
-                        //Click again to recover the thumbnails
-                        textViewer.mockThumbsClick(lastThumb);
-                        //Thread Sleep 1s to load thumbs
-                        textViewer.mockTextureSave(Path.Combine(directoryName, drawIndex + ".exr"), FileType.EXR);
-                    }
-                    if (nextNode == null)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        curNode = nextNode;
-                    }
+                    curNode = nextNode;
+                    continue;
                 }
-            });
+                else if (drawIndex > beginEndTup.Item2)
+                {
+                    break;
+                }
+                eventBrowser.mockSetFocusedNode(curNode);
+                //使用Task调用save
+                textViewer.mockTextureSave(Path.Combine(imageDirName, drawIndex + ".png"), FileType.PNG);
+                //If the end, save depth buffer
+                if (drawIndex == beginEndTup.Item2)
+                {
+                    var thumbnails = textViewer.rwPanel.Thumbnails;
+                    var lastThumb = thumbnails[thumbnails.Length - 1];
+                    //Click the last one
+                    textViewer.mockThumbsClick(lastThumb);
+                    //AutoFit
+                    textViewer.mockFitClick();
+                    //Click again to recover the thumbnails
+                    textViewer.mockThumbsClick(lastThumb);
+                    //store exr
+                    textViewer.mockTextureSave(Path.Combine(directoryName, drawIndex + ".exr"), FileType.EXR);
+                }
+                if (nextNode == null)
+                {
+                    break;
+                }
+                else
+                {
+                    curNode = nextNode;
+                }
+            }
         }
 
         private Tuple<uint,uint> getBeginEnd()
@@ -2191,6 +2207,51 @@ namespace renderdocui.Windows
                 }
             }
             return new Tuple<uint, uint>(begin,end);
+        }
+
+        private void exportAllItem_Click(object sender, EventArgs e)
+        {
+            Dialogs.ExportFrameDialog dialog = new Dialogs.ExportFrameDialog();
+            if(dialog.ShowDialog() == DialogResult.OK)
+            {
+                //search path
+                var files = Directory.GetFiles(dialog.folderPath, @"*.rdc");
+                //load files
+                var task = Task.Factory.StartNew(() =>
+                {
+                    var logger = new StreamWriter(Path.Combine(dialog.folderPath,"log.txt"));
+                    logger.AutoFlush = true;
+                    foreach (var file in files)
+                    {
+                        string comPath = new FileInfo(file).FullName;
+                        try
+                        {
+                            //open file
+                            mockLoad(comPath, false, true);;
+                            //execute store action
+                            saveFrames();
+                            //Log into window
+                            logger.WriteLine("Task {0} Finished.", file);
+                        }
+                        catch (Exception e1)
+                        {
+                            logger.WriteLine("Tass {0} Failed. Reason:{1}", file, e1.Message);
+                        }
+                    }
+                });
+                task.ContinueWith(t => this.CloseSelf());
+            }
+        }
+        
+        public void CloseSelf()
+        {
+            if (InvokeRequired)
+            {
+                var ret = this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    this.Close();
+                }));
+            }
         }
     }
 }

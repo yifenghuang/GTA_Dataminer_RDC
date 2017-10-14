@@ -382,7 +382,6 @@ namespace renderdoc
 
         public static byte[] GetThumbnail(string filename, FileType type, UInt32 maxsize)
         {
-            UInt32 len = 0;
 
             IntPtr filename_mem = CustomMarshal.MakeUTF8String(filename);
 
@@ -390,7 +389,7 @@ namespace renderdoc
 
             bool success = RENDERDOC_GetThumbnail(filename_mem, type, maxsize, mem);
 
-            if (!success || len == 0)
+            if (!success)
             {
                 CustomMarshal.Free(filename_mem);
                 return null;

@@ -111,6 +111,7 @@
             this.sourceOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nightlybuildsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAllItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
@@ -121,7 +122,6 @@
             this.statusProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.saveDialog = new System.Windows.Forms.SaveFileDialog();
-            this.saveAllToolItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -139,7 +139,7 @@
             this.windowToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem,
-            this.saveAllToolItem});
+            this.exportAllItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1589, 28);
@@ -679,6 +679,13 @@
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // exportAllItem
+            // 
+            this.exportAllItem.Name = "exportAllItem";
+            this.exportAllItem.Size = new System.Drawing.Size(88, 24);
+            this.exportAllItem.Text = "ExportAll";
+            this.exportAllItem.Click += new System.EventHandler(this.exportAllItem_Click);
+            // 
             // openDialog
             // 
             this.openDialog.DefaultExt = "rdc";
@@ -836,13 +843,6 @@
             this.saveDialog.Filter = "Log Files (*.rdc)|*.rdc";
             this.saveDialog.Title = "Save Log As";
             // 
-            // saveAllToolItem
-            // 
-            this.saveAllToolItem.Name = "saveAllToolItem";
-            this.saveAllToolItem.Size = new System.Drawing.Size(74, 24);
-            this.saveAllToolItem.Text = "SaveAll";
-            this.saveAllToolItem.Click += new System.EventHandler(this.saveAllToolItem_Click);
-            // 
             // MainWindow
             // 
             this.AllowDrop = true;
@@ -956,6 +956,6 @@
         private System.Windows.Forms.ToolStripMenuItem localContext;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
         private System.Windows.Forms.ToolStripMenuItem startReplayLoopToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveAllToolItem;
+        private System.Windows.Forms.ToolStripMenuItem exportAllItem;
     }
 }

@@ -223,6 +223,12 @@
     <Compile Include="Windows\Dialogs\EnvironmentEditor.Designer.cs">
       <DependentUpon>EnvironmentEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Windows\Dialogs\ExportFrameDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\Dialogs\ExportFrameDialog.Designer.cs">
+      <DependentUpon>ExportFrameDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Windows\Dialogs\FindAllDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -414,6 +420,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\Dialogs\EnvironmentEditor.resx">
       <DependentUpon>EnvironmentEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\Dialogs\ExportFrameDialog.resx">
+      <DependentUpon>ExportFrameDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\Dialogs\FindAllDialog.resx">
       <DependentUpon>FindAllDialog.cs</DependentUpon>
