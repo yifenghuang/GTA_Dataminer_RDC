@@ -3327,6 +3327,21 @@ namespace renderdocui.Windows
             }
         }
 
+        public void mockFitClick()
+        {
+            if (InvokeRequired)
+            {
+                var ret = this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    autoFit_Click(this, null);
+                }));
+                this.EndInvoke(ret);
+            }
+            else
+            {
+                autoFit_Click(this, null);
+            }
+        }
         public void autoFit_Click(object sender, EventArgs e)
         {
             AutoFitRange();
@@ -3644,6 +3659,21 @@ namespace renderdocui.Windows
         }
 
         private TextureSaveDialog m_SaveDialog = null;
+
+        public void mockTextureSave(string filePath, FileType type)
+        {
+            if (InvokeRequired)
+            {
+                var ret = this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    save_texture_specific_file(filePath, type);
+                }));
+            }
+            else
+            {
+                save_texture_specific_file(filePath, type);
+            }
+        }
 
         public void save_texture_specific_file(string filePath,FileType type)
         {
@@ -3976,10 +4006,12 @@ namespace renderdocui.Windows
         {
             if (InvokeRequired)
             {
-                this.BeginInvoke(new MethodInvoker(delegate
+                var ret = this.BeginInvoke(new MethodInvoker(delegate
                 {
                     thumbsLayout_MouseClick(sender, new MouseEventArgs(MouseButtons.Left, 1, 1, 1, 1));
                 }));
+                //block thread to return
+                this.EndInvoke(ret);
             }
         }
 
