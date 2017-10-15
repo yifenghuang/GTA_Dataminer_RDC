@@ -2138,7 +2138,7 @@ namespace renderdocui.Windows
             m_Core.Renderer.CancelReplayLoop();
         }
 
-        private void saveFrames()
+        private void saveFrames(bool savepng=true, bool savedepth=true)
         {
             string directoryName = m_Core.LogFileName + "_output";
             string imageDirName = Path.Combine(directoryName, "images");
@@ -2151,6 +2151,11 @@ namespace renderdocui.Windows
             var eventView = m_Core.GetEventBrowser().eventView;
             var curNode = eventView.Nodes[0];
             var beginEndTup = getBeginEnd();
+            if (!savepng)
+            {
+                var end = beginEndTup.Item2;
+                beginEndTup = new Tuple<uint, uint>(end, end);
+            }
             //store thumbnail
             var thumbBytes = StaticExports.GetThumbnail(m_Core.LogFileName, FileType.JPG, 2000);
             MemoryStream ms = new MemoryStream(thumbBytes); //建立内存的流
@@ -2170,12 +2175,16 @@ namespace renderdocui.Windows
                 {
                     break;
                 }
-                eventBrowser.mockSetFocusedNode(curNode);
-                //使用Task调用save
-                textViewer.mockTextureSave(Path.Combine(imageDirName, drawIndex + ".png"), FileType.PNG);
-                //If the end, save depth buffer
-                if (drawIndex == beginEndTup.Item2)
+                if (savepng)
                 {
+                    eventBrowser.mockSetFocusedNode(curNode);
+                    //使用Task调用save
+                    textViewer.mockTextureSave(Path.Combine(imageDirName, drawIndex + ".png"), FileType.PNG);
+                }
+                //If the end, save depth buffer
+                if (drawIndex == beginEndTup.Item2 && savedepth)
+                {
+                    eventBrowser.mockSetFocusedNode(curNode);
                     var thumbnails = textViewer.rwPanel.Thumbnails;
                     var lastThumb = thumbnails[thumbnails.Length - 1];
                     //Click the last one
@@ -2224,6 +2233,61 @@ namespace renderdocui.Windows
                 }
             }
             return new Tuple<uint, uint>(begin,end);
+        }
+
+        public void commandCall()
+        {
+            string[] args = Environment.GetCommandLineArgs();
+            //获取files的路径
+            //Command args:
+            //1. 指派给当前renderdoc需要遍历的文件夹
+            //   --file=PATH
+            //2. --png=true/false
+            //3. --depth=true/false
+            if (args.Length > 0)
+            {
+                Dictionary<string, object> commandDict = new Dictionary<string, object>();
+                for(int i = 1; i< args.Length; i++)
+                {
+                    var arg = args[i];
+                    var commandContent = arg.Split('=');
+                    commandDict[commandContent[0]] = commandContent[1];
+                }
+                Task.Factory.StartNew(() =>
+                {
+                    exportAllItemCommand(commandDict);
+                });
+            }
+        }
+
+
+        private void exportAllItemCommand(Dictionary<string,object> commandDict)
+        {
+            var files = File.ReadAllLines((string)commandDict["--file"]);
+            foreach (var file in files)
+            {
+                string comPath = new FileInfo(file).FullName;
+                try
+                {
+                    if (m_Core.LogLoaded)
+                    {
+                        m_Core.CloseLogfile();
+                    }
+                    //open file
+                    mockLoad(comPath, false, true);
+                    //click onto texture viewer
+                    mockClickTextureViewer();
+                    //execute store action
+                    var pngOption = commandDict["--png"].Equals("True")? true:false;
+                    var depthOption = commandDict["--depth"].Equals("True") ? true : false;
+                    saveFrames(pngOption, depthOption);
+                }
+                catch (Exception)
+                {
+                    ;
+                }
+            }
+            CloseSelf();
         }
 
         private void exportAllItem_Click(object sender, EventArgs e)
@@ -2275,6 +2339,11 @@ namespace renderdocui.Windows
                     this.Close();
                 }));
             }
+        }
+
+        private void MainWindow_Shown(object sender, EventArgs e)
+        {
+            commandCall();
         }
     }
 }
