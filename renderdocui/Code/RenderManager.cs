@@ -85,7 +85,6 @@ namespace renderdocui.Code
         public RenderManager()
         {
             Running = false;
-
             m_renderQueue = new List<InvokeHandle>();
         }
 
@@ -99,11 +98,9 @@ namespace renderdocui.Code
             LoadProgress = 0.0f;
 
             InitException = null;
-
             m_Thread = Helpers.NewThread(new ThreadStart(this.RunThread));
             m_Thread.Priority = ThreadPriority.Highest;
             m_Thread.Start();
-
             while (m_Thread.IsAlive && !Running) ;
         }
 
@@ -502,7 +499,7 @@ namespace renderdocui.Code
 
             PushInvoke(cmd);
 
-            while (!cmd.processed) ;
+            while (!cmd.processed) Thread.Sleep(100);
 
             if (cmd.ex != null)
                 throw cmd.ex;
@@ -600,7 +597,7 @@ namespace renderdocui.Code
         ////////////////////////////////////////////
         // Internals
 
-        public ReplayRenderer CreateReplayRenderer()
+        private ReplayRenderer CreateReplayRenderer()
         {
             if (m_Remote != null)
                 return m_Remote.OpenCapture(-1, m_Logfile, ref LoadProgress);
@@ -615,8 +612,8 @@ namespace renderdocui.Code
             else
                 renderer.Shutdown();
         }
-
-        public ReplayRenderer m_Renderer;
+        public ReplayRenderer m_save_Render;
+        private ReplayRenderer m_Renderer;
 
         private void RunThread()
         {

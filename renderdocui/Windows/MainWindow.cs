@@ -2161,7 +2161,7 @@ namespace renderdocui.Windows
             {
                 var drawIndex = (uint)curNode.Id;
                 var nextNode = NodeCollection.GetNextNode(curNode, 1);
-                if (drawIndex < beginEndTup.Item2 - 1)
+                if (drawIndex < beginEndTup.Item1)
                 {
                     curNode = nextNode;
                     continue;
@@ -2219,7 +2219,7 @@ namespace renderdocui.Windows
                 }
                 else if(isEnd && !endRegex.Match(d.name).Success)
                 {
-                    end = d.drawcallID;
+                    end = d.drawcallID - 1;
                     break;
                 }
             }

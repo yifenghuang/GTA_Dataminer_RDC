@@ -57,11 +57,16 @@
             this.directoryDialogButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.directoryDialogButton.Location = new System.Drawing.Point(342, 44);
             this.directoryDialogButton.Name = "directoryDialogButton";
-            this.directoryDialogButton.Size = new System.Drawing.Size(57, 23);
+            this.directoryDialogButton.Size = new System.Drawing.Size(40, 23);
             this.directoryDialogButton.TabIndex = 2;
-            this.directoryDialogButton.Text = "...";
+            this.directoryDialogButton.Text = "..";
             this.directoryDialogButton.UseVisualStyleBackColor = false;
             this.directoryDialogButton.Click += new System.EventHandler(this.directoryDialogButton_Click);
+            // 
+            // folderBrowserDialog
+            // 
+            this.folderBrowserDialog.RootFolder = System.Environment.SpecialFolder.DesktopDirectory;
+            this.folderBrowserDialog.SelectedPath = "C:\\Users\\HYF\\Desktop\\testRDCout\\2rdcfilebugtest";
             // 
             // button1
             // 

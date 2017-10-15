@@ -3668,6 +3668,7 @@ namespace renderdocui.Windows
                 {
                     save_texture_specific_file(filePath, type);
                 }));
+                this.EndInvoke(ret);
             }
             else
             {
@@ -3728,8 +3729,12 @@ namespace renderdocui.Windows
                         saveTexture.id = id;
                 });
             }
-            
-            m_Core.Renderer.m_Renderer.SaveTexture(saveTexture, filePath);
+            bool ret = false;
+            m_Core.Renderer.Invoke((ReplayRenderer r) =>
+            {
+                ret = r.SaveTexture(saveTexture, filePath);
+            });
+            while (!ret) Thread.Sleep(100);
         }
 
         private void saveTex_Click(object sender, EventArgs e)
