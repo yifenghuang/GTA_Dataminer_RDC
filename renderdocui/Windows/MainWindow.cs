@@ -1657,6 +1657,7 @@ namespace renderdocui.Windows
 
             return true;
         }
+        
 
         private bool PromptSaveLog()
         {
@@ -1940,6 +1941,22 @@ namespace renderdocui.Windows
             t.Show(dockPanel);
         }
 
+        public void mockClickTextureViewer()
+        {
+            if (InvokeRequired)
+            {
+                var ret = this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    textureToolStripMenuItem_Click(this, null);
+                }));
+                this.EndInvoke(ret);
+            }
+            else
+            {
+                textureToolStripMenuItem_Click(this, null);
+            }
+        }
+
         private void pythonShellToolStripMenuItem_Click(object sender, EventArgs e)
         {
             (new Dialogs.PythonShell(m_Core)).Show(dockPanel);
@@ -2144,7 +2161,7 @@ namespace renderdocui.Windows
             {
                 var drawIndex = (uint)curNode.Id;
                 var nextNode = NodeCollection.GetNextNode(curNode, 1);
-                if (drawIndex < beginEndTup.Item1)
+                if (drawIndex < beginEndTup.Item2 - 1)
                 {
                     curNode = nextNode;
                     continue;
@@ -2226,8 +2243,14 @@ namespace renderdocui.Windows
                         string comPath = new FileInfo(file).FullName;
                         try
                         {
+                            if (m_Core.LogLoaded)
+                            {
+                                m_Core.CloseLogfile();
+                            }
                             //open file
-                            mockLoad(comPath, false, true);;
+                            mockLoad(comPath, false, true);
+                            //click onto texture viewer
+                            mockClickTextureViewer();
                             //execute store action
                             saveFrames();
                             //Log into window

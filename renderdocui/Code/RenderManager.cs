@@ -600,7 +600,7 @@ namespace renderdocui.Code
         ////////////////////////////////////////////
         // Internals
 
-        private ReplayRenderer CreateReplayRenderer()
+        public ReplayRenderer CreateReplayRenderer()
         {
             if (m_Remote != null)
                 return m_Remote.OpenCapture(-1, m_Logfile, ref LoadProgress);
@@ -616,7 +616,7 @@ namespace renderdocui.Code
                 renderer.Shutdown();
         }
 
-        private ReplayRenderer m_Renderer;
+        public ReplayRenderer m_Renderer;
 
         private void RunThread()
         {

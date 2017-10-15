@@ -3728,11 +3728,8 @@ namespace renderdocui.Windows
                         saveTexture.id = id;
                 });
             }
-
-            m_Core.Renderer.Invoke((ReplayRenderer r) =>
-            {
-                r.SaveTexture(saveTexture, filePath);
-            });
+            
+            m_Core.Renderer.m_Renderer.SaveTexture(saveTexture, filePath);
         }
 
         private void saveTex_Click(object sender, EventArgs e)
