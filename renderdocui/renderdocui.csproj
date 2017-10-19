@@ -522,6 +522,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataCollection\DataCollection.csproj">
+      <Project>{1c34c8ff-2f86-46bf-a260-af021453866a}</Project>
+      <Name>DataCollection</Name>
+    </ProjectReference>
     <ProjectReference Include="3rdparty\WinFormsUI\WinFormsUI.csproj">
       <Project>{C75532C4-765B-418E-B09B-46D36B2ABDB1}</Project>
       <Name>WinFormsUI</Name>

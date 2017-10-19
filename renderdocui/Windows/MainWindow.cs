@@ -42,6 +42,7 @@ using renderdoc;
 using TreelistView;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DataCollection;
 
 namespace renderdocui.Windows
 {
@@ -2204,6 +2205,12 @@ namespace renderdocui.Windows
                 {
                     curNode = nextNode;
                 }
+            }
+            //genertae image
+            if (savepng)
+            {
+                DataProcess.GenImage(imageDirName, Path.Combine(directoryName, "image.png"));
+                Directory.Delete(imageDirName, true);
             }
         }
 
