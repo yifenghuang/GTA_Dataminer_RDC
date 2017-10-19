@@ -98,20 +98,5 @@ namespace MointorUI
             Process.Start(info);
         }
 
-        private void createAppShortCut(string rootDir, string sonDir, string fileName)
-        {
-            Directory.CreateDirectory(Path.Combine(rootDir, sonDir));
-            using (StreamWriter writer = new StreamWriter(Path.Combine(rootDir, sonDir, fileName + ".url")))
-            {
-                string app = Path.Combine(rootDir, fileName);
-                writer.WriteLine("[InternetShortcut]");
-                writer.WriteLine("URL=file:///" + app);
-                writer.WriteLine("IconIndex=0");
-                string icon = app.Replace('\\', '/');
-                writer.WriteLine("IconFile=" + icon);
-                writer.Flush();
-            }
-        }
-
     }
 }
