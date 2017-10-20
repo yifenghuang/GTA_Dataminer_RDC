@@ -51,7 +51,7 @@ namespace MointorUI
             var files = Directory.GetFiles(rdcFolderPathText.Text,"*.rdc");
             processCount = Math.Min(files.Length, processCount);
             //间隔数字,每隔多少个数字建立一个文件夹存放快捷方式
-            var interval = Math.Ceiling((double)files.Length / processCount);
+            var interval = (int)Math.Ceiling((double)files.Length / processCount);
             string rdcFolderPath = rdcFolderPathText.Text;
             Task.Factory.StartNew(() =>
             {

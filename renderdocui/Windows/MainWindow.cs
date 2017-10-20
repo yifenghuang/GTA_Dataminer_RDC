@@ -43,6 +43,7 @@ using TreelistView;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DataCollection;
+using System.Collections;
 
 namespace renderdocui.Windows
 {
@@ -2168,7 +2169,7 @@ namespace renderdocui.Windows
                     curNode = nextNode;
                     continue;
                 }
-                if (drawIndex < beginEndTup.Item1)
+                if (drawIndex < beginEndTup.Item2)
                 {
                     curNode = nextNode;
                     continue;
@@ -2241,11 +2242,11 @@ namespace renderdocui.Windows
         private Tuple<uint,uint,uint> getBeginEnd()
         {
             uint begin = 0, end = 0, thumbIndex = 0;
-            int copySourceCounter = 0;
             bool isBegin = false, isEnd = false;
             Regex beginRegex = new Regex("CopySubresourceRegion.+");
-            Regex copyRegex = new Regex("CopyResource.+");
+            Regex copyRegex = new Regex("ResolveSubresource.+");
             Regex endRegex = new Regex("DrawIndexed.+");
+            LimitedQueue<uint> copyQueue = new LimitedQueue<uint>(3);
             foreach (FetchDrawcall d in m_Core.GetDrawcalls())
             {
                 Console.WriteLine(d.name, d.drawcallID);
@@ -2267,16 +2268,19 @@ namespace renderdocui.Windows
                         end = d.drawcallID - 1;
                         isBegin = false;
                     }
-                    else if (copySourceCounter < 3 && copyRegex.Match(d.name).Success)
+                    else if (copyRegex.Match(d.name).Success)
                     {
-                        copySourceCounter++;
-                        if (copySourceCounter == 3)
-                        {
-                            thumbIndex = d.drawcallID - 3;
-                            break;
-                        }
+                        copyQueue.Enqueue(d.drawcallID + 1);
                     }
                 }
+            }
+            if(copyQueue.Count == copyQueue.Limit)
+            {
+                thumbIndex = copyQueue.Peek();
+            }
+            else
+            {
+                thumbIndex = copyQueue.ToArray()[copyQueue.Count - 1];
             }
             return new Tuple<uint, uint,uint>(begin,end,thumbIndex);
         }
@@ -2392,4 +2396,30 @@ namespace renderdocui.Windows
             commandCall();
         }
     }
+    public class LimitedQueue<T> : Queue<T>
+    {
+        private int limit = -1;
+
+        public int Limit
+        {
+            get { return limit; }
+            set { limit = value; }
+        }
+
+        public LimitedQueue(int limit)
+            : base(limit)
+        {
+            this.Limit = limit;
+        }
+
+        public new void Enqueue(T item)
+        {
+            if (this.Count >= this.Limit)
+            {
+                this.Dequeue();
+            }
+            base.Enqueue(item);
+        }
+    }
+
 }
