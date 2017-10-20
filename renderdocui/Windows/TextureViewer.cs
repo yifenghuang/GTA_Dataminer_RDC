@@ -4015,6 +4015,10 @@ namespace renderdocui.Windows
                 //block thread to return
                 this.EndInvoke(ret);
             }
+            else
+            {
+                thumbsLayout_MouseClick(sender, new MouseEventArgs(MouseButtons.Left, 1, 1, 1, 1));
+            }
         }
 
         private void thumbsLayout_MouseClick(object sender, MouseEventArgs e)

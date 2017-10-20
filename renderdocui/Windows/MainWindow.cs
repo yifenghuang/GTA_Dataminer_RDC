@@ -2151,22 +2151,23 @@ namespace renderdocui.Windows
             //遍历ID
             var eventView = m_Core.GetEventBrowser().eventView;
             var curNode = eventView.Nodes[0];
+            Node depthNode = curNode;
             var beginEndTup = getBeginEnd();
             if (!savepng)
             {
                 var end = beginEndTup.Item2;
-                beginEndTup = new Tuple<uint, uint>(end, end);
+                beginEndTup = new Tuple<uint, uint, uint>(end, end, beginEndTup.Item3);
             }
-            //store thumbnail
-            var thumbBytes = StaticExports.GetThumbnail(m_Core.LogFileName, FileType.JPG, 2000);
-            MemoryStream ms = new MemoryStream(thumbBytes); //建立内存的流
-            Image img = Image.FromStream((Stream)ms); //把内存的流转换成图片格式
-            img.Save(Path.Combine(directoryName, "thumbnail.jpg"), System.Drawing.Imaging.ImageFormat.Jpeg);// 保存图片
-
+            int drawIndex = 0;
             while (true)
             {
-                var drawIndex = (uint)curNode.Id;
                 var nextNode = NodeCollection.GetNextNode(curNode, 1);
+                var strIndex = curNode.GetData()[1];
+                if(!int.TryParse(strIndex.ToString(),out drawIndex))
+                {
+                    curNode = nextNode;
+                    continue;
+                }
                 if (drawIndex < beginEndTup.Item1)
                 {
                     curNode = nextNode;
@@ -2185,17 +2186,7 @@ namespace renderdocui.Windows
                 //If the end, save depth buffer
                 if (drawIndex == beginEndTup.Item2 && savedepth)
                 {
-                    eventBrowser.mockSetFocusedNode(curNode);
-                    var thumbnails = textViewer.rwPanel.Thumbnails;
-                    var lastThumb = thumbnails[thumbnails.Length - 1];
-                    //Click the last one
-                    textViewer.mockThumbsClick(lastThumb);
-                    //AutoFit
-                    textViewer.mockFitClick();
-                    //Click again to recover the thumbnails
-                    textViewer.mockThumbsClick(lastThumb);
-                    //store exr
-                    textViewer.mockTextureSave(Path.Combine(directoryName, drawIndex + ".exr"), FileType.EXR);
+                    depthNode = curNode;
                 }
                 if (nextNode == null)
                 {
@@ -2206,6 +2197,39 @@ namespace renderdocui.Windows
                     curNode = nextNode;
                 }
             }
+            //store thumbnail
+            while(true)
+            {
+                var nextNode = NodeCollection.GetNextNode(curNode, 1);
+                var strIndex = curNode.GetData()[1];
+                if (!int.TryParse(strIndex.ToString(), out drawIndex))
+                {
+                    curNode = nextNode;
+                    continue;
+                }
+                if (drawIndex == beginEndTup.Item3)
+                {
+                    //Click the first one
+                    eventBrowser.mockSetFocusedNode(curNode);
+                    textViewer.mockTextureSave(Path.Combine(directoryName, "thumbnail.png"), FileType.PNG);
+                    break;
+                }
+                curNode = nextNode;
+            }
+            if (savedepth)
+            {
+                eventBrowser.mockSetFocusedNode(depthNode);
+                var thumbnails = textViewer.rwPanel.Thumbnails;
+                var lastThumb = thumbnails[thumbnails.Length - 1];
+                //Click the last one
+                textViewer.mockThumbsClick(lastThumb);
+                //AutoFit
+                textViewer.mockFitClick();
+                //Click again to recover the thumbnails
+                textViewer.mockThumbsClick(lastThumb);
+                //store exr
+                textViewer.mockTextureSave(Path.Combine(directoryName, "depth.exr"), FileType.EXR);
+            }
             //genertae image
             if (savepng)
             {
@@ -2214,16 +2238,18 @@ namespace renderdocui.Windows
             }
         }
 
-        private Tuple<uint,uint> getBeginEnd()
+        private Tuple<uint,uint,uint> getBeginEnd()
         {
-            uint begin = 0,end = 0;
+            uint begin = 0, end = 0, thumbIndex = 0;
+            int copySourceCounter = 0;
             bool isBegin = false, isEnd = false;
             Regex beginRegex = new Regex("CopySubresourceRegion.+");
+            Regex copyRegex = new Regex("CopyResource.+");
             Regex endRegex = new Regex("DrawIndexed.+");
             foreach (FetchDrawcall d in m_Core.GetDrawcalls())
             {
                 Console.WriteLine(d.name, d.drawcallID);
-                if (beginRegex.Match(d.name).Success)
+                if (!isEnd && beginRegex.Match(d.name).Success)
                 {
                     isBegin = true;
                 }
@@ -2233,13 +2259,26 @@ namespace renderdocui.Windows
                     isEnd = true;
                     begin = d.drawcallID;
                 }
-                else if(isEnd && !endRegex.Match(d.name).Success)
+                //isEnd || endRegex.NotMatch || both
+                else if (isEnd)
                 {
-                    end = d.drawcallID - 1;
-                    break;
+                    if (isBegin && !endRegex.Match(d.name).Success)
+                    {
+                        end = d.drawcallID - 1;
+                        isBegin = false;
+                    }
+                    else if (copySourceCounter < 3 && copyRegex.Match(d.name).Success)
+                    {
+                        copySourceCounter++;
+                        if (copySourceCounter == 3)
+                        {
+                            thumbIndex = d.drawcallID - 3;
+                            break;
+                        }
+                    }
                 }
             }
-            return new Tuple<uint, uint>(begin,end);
+            return new Tuple<uint, uint,uint>(begin,end,thumbIndex);
         }
 
         public void commandCall()
