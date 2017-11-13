@@ -111,6 +111,7 @@
             this.sourceOnGithubToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nightlybuildsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportThisToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportAllItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
@@ -139,6 +140,7 @@
             this.windowToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem,
+            this.exportThisToolStripMenuItem,
             this.exportAllItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -679,6 +681,13 @@
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // exportThisToolStripMenuItem
+            // 
+            this.exportThisToolStripMenuItem.Name = "exportThisToolStripMenuItem";
+            this.exportThisToolStripMenuItem.Size = new System.Drawing.Size(98, 24);
+            this.exportThisToolStripMenuItem.Text = "ExportThis";
+            this.exportThisToolStripMenuItem.Click += new System.EventHandler(this.exportThisToolStripMenuItem_Click);
+            // 
             // exportAllItem
             // 
             this.exportAllItem.Name = "exportAllItem";
@@ -958,5 +967,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator13;
         private System.Windows.Forms.ToolStripMenuItem startReplayLoopToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportAllItem;
+        private System.Windows.Forms.ToolStripMenuItem exportThisToolStripMenuItem;
     }
 }

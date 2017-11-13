@@ -47,6 +47,7 @@ using System.Collections;
 
 namespace renderdocui.Windows
 {
+
     public partial class MainWindow : Form, ILogViewerForm, ILogLoadProgressListener, IMessageFilter
     {
         public bool PreFilterMessage(ref Message m)
@@ -2140,7 +2141,7 @@ namespace renderdocui.Windows
             m_Core.Renderer.CancelReplayLoop();
         }
 
-        private void saveFrames(bool savepng=true, bool savedepth=true)
+        private void saveFrames(bool savepng=true, bool savedepth=true, bool savestencil=true)
         {
             string directoryName = m_Core.LogFileName + "_output";
             string imageDirName = Path.Combine(directoryName, "images");
@@ -2169,7 +2170,7 @@ namespace renderdocui.Windows
                     curNode = nextNode;
                     continue;
                 }
-                if (drawIndex < beginEndTup.Item2)
+                if (drawIndex < beginEndTup.Item1)
                 {
                     curNode = nextNode;
                     continue;
@@ -2230,6 +2231,11 @@ namespace renderdocui.Windows
                 textViewer.mockThumbsClick(lastThumb);
                 //store exr
                 textViewer.mockTextureSave(Path.Combine(directoryName, "depth.exr"), FileType.EXR);
+            }
+            if (savestencil)
+            {
+                textViewer.mockStencilClick();
+                textViewer.mockTextureSave(Path.Combine(directoryName, "stencil.png"), FileType.PNG);
             }
             //genertae image
             if (savepng)
@@ -2330,7 +2336,8 @@ namespace renderdocui.Windows
                     //execute store action
                     var pngOption = commandDict["--png"].Equals("True")? true:false;
                     var depthOption = commandDict["--depth"].Equals("True") ? true : false;
-                    saveFrames(pngOption, depthOption);
+                    var stencilOption = commandDict["--stencil"].Equals("True") ? true : false;
+                    saveFrames(pngOption, depthOption, stencilOption);
                 }
                 catch (Exception)
                 {
@@ -2394,6 +2401,39 @@ namespace renderdocui.Windows
         private void MainWindow_Shown(object sender, EventArgs e)
         {
             commandCall();
+        }
+
+        private void exportThisToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (File.Exists(m_Core.LogFileName))
+            {
+                var task = Task.Factory.StartNew(() =>
+                {
+                    string comPath = new FileInfo(m_Core.LogFileName).FullName;
+                    try
+                    {
+                        if (m_Core.LogLoaded)
+                        {
+                            m_Core.CloseLogfile();
+                        }
+                        //open file
+                        mockLoad(comPath, false, true);
+                        //click onto texture viewer
+                        mockClickTextureViewer();
+                        //execute store action
+                        saveFrames();
+                        //Log into window
+                    }
+                    catch (Exception e1)
+                    {
+                        Console.WriteLine("Tass {0} Failed. Reason:{1}", m_Core.LogFileName, e1.Message);
+                    }
+                });
+            }
+            else
+            {
+                MessageBox.Show("No file loaded!");
+            }
         }
     }
     public class LimitedQueue<T> : Queue<T>

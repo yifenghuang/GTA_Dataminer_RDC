@@ -43,6 +43,7 @@
             this.startBtn = new System.Windows.Forms.Button();
             this.renderExeChooseDialog = new System.Windows.Forms.OpenFileDialog();
             this.rdcFolderChooseDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.stencilCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.limitedNumericUpDown)).BeginInit();
             this.SuspendLayout();
             // 
@@ -133,7 +134,7 @@
             this.depthSelectCheckBox.AutoSize = true;
             this.depthSelectCheckBox.Checked = true;
             this.depthSelectCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.depthSelectCheckBox.Location = new System.Drawing.Point(430, 179);
+            this.depthSelectCheckBox.Location = new System.Drawing.Point(416, 179);
             this.depthSelectCheckBox.Name = "depthSelectCheckBox";
             this.depthSelectCheckBox.Size = new System.Drawing.Size(104, 19);
             this.depthSelectCheckBox.TabIndex = 7;
@@ -191,11 +192,24 @@
             // 
             this.renderExeChooseDialog.FileName = "openFileDialog1";
             // 
+            // stencilCheckBox
+            // 
+            this.stencilCheckBox.AutoSize = true;
+            this.stencilCheckBox.Checked = true;
+            this.stencilCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.stencilCheckBox.Location = new System.Drawing.Point(562, 179);
+            this.stencilCheckBox.Name = "stencilCheckBox";
+            this.stencilCheckBox.Size = new System.Drawing.Size(115, 19);
+            this.stencilCheckBox.TabIndex = 14;
+            this.stencilCheckBox.Text = "输出Stencil";
+            this.stencilCheckBox.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(724, 313);
+            this.Controls.Add(this.stencilCheckBox);
             this.Controls.Add(this.startBtn);
             this.Controls.Add(this.rdcFolderBtn);
             this.Controls.Add(this.rdcFolderPathText);
@@ -234,6 +248,7 @@
         private System.Windows.Forms.Button startBtn;
         private System.Windows.Forms.OpenFileDialog renderExeChooseDialog;
         private System.Windows.Forms.FolderBrowserDialog rdcFolderChooseDialog;
+        private System.Windows.Forms.CheckBox stencilCheckBox;
     }
 }
 

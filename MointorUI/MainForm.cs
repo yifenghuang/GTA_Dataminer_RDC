@@ -39,6 +39,7 @@ namespace MointorUI
         {
             bool pngCommand = pngSelectCheckBox.Checked;
             bool depthCommand = depthSelectCheckBox.Checked;
+            bool stencilCommand = stencilCheckBox.Checked;
             int processCount = (int)limitedNumericUpDown.Value;
             if (autoSelectCheckBox.Checked)
             {
@@ -46,7 +47,7 @@ namespace MointorUI
             }
             if (string.IsNullOrEmpty(renderDocPathText.Text)) return;
             if (string.IsNullOrEmpty(rdcFolderPathText.Text)) return;
-            string argumentTemplate ="--file={0} --png={1} --depth={2}";
+            string argumentTemplate ="--file={0} --png={1} --depth={2} --stencil={3}";
             //创建快捷方式文件夹,以存放不同进程需要处理的文件
             var files = Directory.GetFiles(rdcFolderPathText.Text,"*.rdc");
             processCount = Math.Min(files.Length, processCount);
@@ -70,7 +71,8 @@ namespace MointorUI
                     var arguments = string.Format(argumentTemplate,
                         Path.Combine(rdcFolderPath, "FileList" + i.ToString()),
                         pngCommand.ToString(),
-                        depthCommand.ToString());
+                        depthCommand.ToString(),
+                        stencilCommand.ToString());
                     StartProcess(renderDocPathText.Text, arguments);
                 }
 

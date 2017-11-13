@@ -4021,6 +4021,22 @@ namespace renderdocui.Windows
             }
         }
 
+        public void mockStencilClick()
+        {
+            if (InvokeRequired)
+            {
+                var ret = this.BeginInvoke(new MethodInvoker(delegate
+                {
+                    stencilDisplay.Checked = true;
+                }));
+                this.EndInvoke(ret);
+            }
+            else
+            {
+                stencilDisplay.Checked = true;
+            }
+        }
+
         private void thumbsLayout_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left && sender is ResourcePreview)
